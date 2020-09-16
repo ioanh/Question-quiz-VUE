@@ -2,7 +2,8 @@
   <div id="app">
     <Header
       v-if="questions.length"
-      :index="index"
+      :numCorrect="numCorrect"
+      :numTotal="numTotal"
      />
     <b-container class="bv-example-row">
     <b-row>
@@ -11,6 +12,7 @@
           v-if="questions.length" 
           :currentQuestion="questions[index]"
           :next="next"
+          :increment="increment"
         />
       </b-col>
     </b-row>
@@ -19,6 +21,7 @@
 </template>
 
 <script>
+/*IMPORTS*/
 import Header from './components/Header.vue'
 import QuestionBox from './components/QuestionBox.vue'
 import Vue from 'vue'
@@ -30,9 +33,10 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
-
+/*INITIALIZING THE APP COMPONENT*/
 export default {
   name: 'App',
+  /*IMPORTING COMPONENTS*/
   components: {
     Header,
     QuestionBox
@@ -40,21 +44,31 @@ export default {
   data() {
     return {
       questions: [],
-      index: 0
+      index: 0,
+      numCorrect: 0,
+      numTotal: 0
     }
   },
   methods:{
+    /* INCREMENTING THE INDEX OF THE CURRENT QUESTION EVERY TIME WHEN THE NEXT BUTTON IS CLICKED IN THE QUESTIONBOX COMPONENT*/
     next() {
       this.index++
+    },/*INCREMENTING THE CORRECTANSWERS, TOTALANSWERED COUNTERS IN THE HEADER COMPONENT*/
+    increment(isCorrect) {
+      if(isCorrect) {
+        this.numCorrect++
+      }
+      this.numTotal++
     }
   },
   mounted() {
+    /*REQUESTING THE API*/
     fetch('https://opentdb.com/api.php?amount=10&category=27&type=multiple', {
       method: 'get'
-    })
+    })/*RESOLVING THE PROMISE*/
       .then((response) => {
         return response.json()
-      })
+      })/*FILLING UP THE QUESTIONS ARRAY WITH THE RESULTS FROM THE JSON FILE*/
       .then((jsonData) => {
         this.questions = jsonData.results
       })
