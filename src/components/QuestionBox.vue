@@ -7,10 +7,10 @@
       <hr class="my-4">
       <b-list-group>
         <b-list-group-item
-          v-for="(answer, index) in answers"
+          v-for="(answer, index) in shuffledAnswers"
           :key="index"
           @click.prevent="selectAnswer(index)"
-          :class="[selectedIndex === index ? 'selected' : '']"
+          :class="answerClass(index)"
         >
           {{ answer }}
         </b-list-group-item>
@@ -18,7 +18,7 @@
       <b-button 
         variant="primary"
         @click="submitAnswer"
-        :disabled="selectedIndex === null"
+        :disabled="selectedIndex === null || isAnswered"
       >
         Submit
       </b-button>
@@ -85,6 +85,17 @@ export default {
       let answers = [...this.currentQuestion.incorrect_answers, this.currentQuestion.correct_answer]
       this.shuffledAnswers = _.shuffle(answers)
       this.correctIndex = this.shuffledAnswers.indexOf(this.currentQuestion.correct_answer)
+    },/*CHECK AND ADD CLASS TO THE ANSWERS*/
+    answerClass(index) {
+      let answerClass = ''
+      if(!this.isAnswered && this.selectedIndex === index){
+        answerClass = 'selected'
+      }else if (this.isAnswered && this.correctIndex === index) {
+        answerClass = 'correct'
+      }else if (this.isAnswered && this.selectedIndex === index && this.correctIndex !== index){
+        answerClass = 'incorrect'
+      }
+      return answerClass
     }
   }
   // mounted() {
@@ -110,6 +121,6 @@ export default {
   background-color: lightgreen;
 }
 .incorrect {
-  background-color: red;
+  background-color: rgba(255, 0, 0, 0.329);
 }
 </style>>
